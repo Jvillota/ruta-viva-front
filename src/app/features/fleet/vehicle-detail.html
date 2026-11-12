@@ -1,0 +1,96 @@
+<section class="page" id="ctn_vehicle_detail">
+  <a mat-button routerLink="/fleet" id="lnk_back_to_fleet"><mat-icon>arrow_back</mat-icon> Flota</a>
+
+  @if (vehicle(); as v) {
+    <header class="page-header">
+      <h1 id="ttl_vehicle_plate">Vehículo {{ v.plate }}</h1>
+    </header>
+
+    <mat-card appearance="outlined" class="block">
+      <mat-card-content>
+        <dl class="facts">
+          <div><dt>Odómetro</dt><dd id="txt_vehicle_odometer">{{ v.odometerKm | km }}</dd></div>
+          <div><dt>Taller asignado</dt><dd id="txt_vehicle_workshop">{{ v.workshopName }}</dd></div>
+          <div><dt>Rutinas</dt><dd>{{ v.routines.length }}</dd></div>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+
+    <h2 id="ttl_vehicle_routines">Rutinas de mantenimiento</h2>
+    <mat-card appearance="outlined" class="block">
+      <table mat-table [dataSource]="v.routines" id="tbl_vehicle_routines" class="full-width">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Rutina</th>
+          <td mat-cell *matCellDef="let r">{{ r.name }}</td>
+        </ng-container>
+        <ng-container matColumnDef="interval">
+          <th mat-header-cell *matHeaderCellDef>Intervalo</th>
+          <td mat-cell *matCellDef="let r">{{ intervalText(r) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let r">
+            <app-status-chip kind="routine" [status]="r.status" [chipId]="'chp_routine_status_' + r.id" />
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="due">
+          <th mat-header-cell *matHeaderCellDef>Vence</th>
+          <td mat-cell *matCellDef="let r">
+            @if (r.dueKm !== null) {
+              <div>{{ r.dueKm | km }}</div>
+            }
+            @if (r.dueDate) {
+              <div>{{ r.dueDate | date: 'mediumDate' : 'UTC' }}</div>
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="remaining">
+          <th mat-header-cell *matHeaderCellDef>Falta</th>
+          <td mat-cell *matCellDef="let r">
+            @if (r.remainingKm !== null) {
+              <div [class.remaining--negative]="r.remainingKm <= 0">{{ r.remainingKm | km }}</div>
+            }
+            @if (r.remainingDays !== null) {
+              <div [class.remaining--negative]="r.remainingDays <= 0">{{ r.remainingDays }} días</div>
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="order">
+          <th mat-header-cell *matHeaderCellDef>Orden abierta</th>
+          <td mat-cell *matCellDef="let r">
+            @if (r.openServiceOrderId) {
+              <a [routerLink]="['/orders', r.openServiceOrderId]" [id]="'lnk_open_order_' + r.id">Ver orden</a>
+            } @else {
+              <span class="muted">—</span>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="routineColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: routineColumns"></tr>
+      </table>
+    </mat-card>
+
+    <h2 id="ttl_vehicle_readings">Últimas lecturas de odómetro</h2>
+    <mat-card appearance="outlined" class="block">
+      <table mat-table [dataSource]="readings()" id="tbl_vehicle_readings" class="full-width">
+        <ng-container matColumnDef="km">
+          <th mat-header-cell *matHeaderCellDef class="num">Km</th>
+          <td mat-cell *matCellDef="let r" class="num">{{ r.km | km }}</td>
+        </ng-container>
+        <ng-container matColumnDef="outcome">
+          <th mat-header-cell *matHeaderCellDef>Resultado</th>
+          <td mat-cell *matCellDef="let r">{{ outcomeText(r.outcome) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="receivedAt">
+          <th mat-header-cell *matHeaderCellDef>Recibida</th>
+          <td mat-cell *matCellDef="let r">{{ r.receivedAt | date: 'short' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="readingColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: readingColumns"></tr>
+      </table>
+      @if (readings().length === 0) {
+        <p class="empty" id="txt_vehicle_no_readings">Aún no hay lecturas. Envíe una desde el simulador.</p>
+      }
+    </mat-card>
+  }
+</section>

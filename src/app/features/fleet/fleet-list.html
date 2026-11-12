@@ -1,0 +1,52 @@
+<section class="page" id="ctn_fleet_module">
+  <header class="page-header">
+    <h1 id="ttl_fleet_module">Flota</h1>
+    <p class="muted" id="txt_fleet_hint">Estado del mantenimiento preventivo por vehículo. Se actualiza cada 5 segundos.</p>
+  </header>
+
+  <mat-card appearance="outlined">
+    <table mat-table [dataSource]="vehicles()" id="tbl_fleet_vehicles" class="full-width">
+      <ng-container matColumnDef="plate">
+        <th mat-header-cell *matHeaderCellDef>Placa</th>
+        <td mat-cell *matCellDef="let v">
+          <a [routerLink]="['/fleet', v.id]" [id]="'lnk_vehicle_' + v.plate" class="plate">{{ v.plate }}</a>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="workshop">
+        <th mat-header-cell *matHeaderCellDef>Taller asignado</th>
+        <td mat-cell *matCellDef="let v">{{ v.workshopName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="odometer">
+        <th mat-header-cell *matHeaderCellDef class="num">Odómetro</th>
+        <td mat-cell *matCellDef="let v" class="num">{{ v.odometerKm | km }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="routines">
+        <th mat-header-cell *matHeaderCellDef>Rutinas</th>
+        <td mat-cell *matCellDef="let v">
+          <span class="count count--ok" title="Al día">{{ v.routinesUpToDate }} al día</span>
+          @if (v.routinesDueSoon) {
+            <span class="count count--warn">{{ v.routinesDueSoon }} por vencer</span>
+          }
+          @if (v.routinesOverdue) {
+            <span class="count count--danger">{{ v.routinesOverdue }} vencida(s)</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="orders">
+        <th mat-header-cell *matHeaderCellDef class="num">Órdenes abiertas</th>
+        <td mat-cell *matCellDef="let v" class="num">{{ v.openServiceOrders }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+
+    @if (loaded() && vehicles().length === 0) {
+      <p class="empty" id="txt_fleet_empty">No hay vehículos registrados.</p>
+    }
+  </mat-card>
+</section>

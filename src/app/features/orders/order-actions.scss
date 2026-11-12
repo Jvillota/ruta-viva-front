@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.actions h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 8px 0;
+
+  button {
+    margin-top: 8px;
+  }
+}
+
+.callout {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--rv-warn-bg);
+  color: var(--rv-warn-fg);
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+}

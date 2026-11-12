@@ -1,0 +1,118 @@
+// Global styles: Material 3 theme, status color tokens and a few layout helpers shared by every page.
+// Component-specific styles live next to each component.
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+
+  // Status tokens (routine and order states). Text always accompanies color.
+  --rv-ok-bg: #e3f4e6;
+  --rv-ok-fg: #1b5e20;
+  --rv-warn-bg: #fff4d6;
+  --rv-warn-fg: #8a5300;
+  --rv-danger-bg: #fde7e7;
+  --rv-danger-fg: #b3261e;
+  --rv-info-bg: #e3eefc;
+  --rv-info-fg: #0b4a8b;
+  --rv-neutral-bg: #eceff1;
+  --rv-neutral-fg: #455a64;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface);
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0 0 4px;
+    font: var(--mat-sys-headline-small);
+  }
+
+  &.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+h2 {
+  font: var(--mat-sys-title-medium);
+  margin: 24px 0 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.block {
+  margin-bottom: 16px;
+}
+
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 0;
+
+  div {
+    min-width: 140px;
+  }
+
+  dt {
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    margin: 2px 0 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+// Tables scroll horizontally inside their card instead of breaking narrow screens.
+mat-card:has(> table) {
+  overflow-x: auto;
+}
+
+.snack-error {
+  --mat-snack-bar-container-color: #b3261e;
+  --mat-snack-bar-supporting-text-color: #fff;
+}

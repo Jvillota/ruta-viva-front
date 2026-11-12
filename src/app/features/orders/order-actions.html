@@ -1,0 +1,54 @@
+<section class="actions" id="ctn_order_actions">
+  <h3 id="ttl_order_actions">Acciones como {{ actor.label() }}</h3>
+
+  @if (actions().length === 0) {
+    <p class="muted" id="txt_order_no_actions">No hay acciones disponibles para {{ actor.label() }} en este estado.</p>
+  }
+
+  @if (can('quote')) {
+    <form [formGroup]="quoteForm" (ngSubmit)="submitQuote()" class="inline-form" id="frm_order_quote">
+      <mat-form-field appearance="outline">
+        <mat-label>Valor de la cotización (COP)</mat-label>
+        <input matInput type="number" min="1" formControlName="amountCop" id="fld_quote_amount" />
+        <mat-hint>Hasta $ 1.500.000 se aprueba automáticamente</mat-hint>
+      </mat-form-field>
+      <button mat-flat-button type="submit" id="btn_submit_quote"><mat-icon>request_quote</mat-icon> Enviar cotización</button>
+    </form>
+  }
+
+  @if (can('approve')) {
+    <p class="callout" id="txt_quote_requires_approval">
+      La cotización de <strong>{{ order().quoteAmountCop | cop }}</strong> supera el umbral y requiere su aprobación.
+    </p>
+  }
+
+  <div class="buttons">
+    @if (can('approve')) {
+      <button mat-flat-button (click)="approve()" id="btn_approve_quote"><mat-icon>check</mat-icon> Aprobar</button>
+    }
+    @if (can('reject')) {
+      <button mat-stroked-button (click)="reject()" id="btn_reject_quote"><mat-icon>close</mat-icon> Rechazar</button>
+    }
+    @if (can('start')) {
+      <button mat-flat-button (click)="start()" id="btn_start_service"><mat-icon>build</mat-icon> Iniciar servicio</button>
+    }
+    @if (can('cancel')) {
+      <button mat-button (click)="cancel()" id="btn_cancel_order"><mat-icon>block</mat-icon> Cancelar orden</button>
+    }
+  </div>
+
+  @if (can('complete')) {
+    <form [formGroup]="completeForm" (ngSubmit)="submitCompletion()" class="inline-form" id="frm_order_complete">
+      <mat-form-field appearance="outline">
+        <mat-label>Kilometraje real del servicio</mat-label>
+        <input matInput type="number" min="0" formControlName="serviceKm" id="fld_service_km" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha real del servicio</mat-label>
+        <input matInput type="date" formControlName="serviceDate" id="fld_service_date" />
+        <mat-hint>Vacía = fecha de negocio actual</mat-hint>
+      </mat-form-field>
+      <button mat-flat-button type="submit" id="btn_complete_service"><mat-icon>task_alt</mat-icon> Completar</button>
+    </form>
+  }
+</section>

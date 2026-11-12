@@ -1,0 +1,53 @@
+<section class="page" id="ctn_order_detail">
+  <a mat-button routerLink="/orders" id="lnk_back_to_orders"><mat-icon>arrow_back</mat-icon> Órdenes</a>
+
+  @if (order(); as o) {
+    <header class="page-header row">
+      <h1 id="ttl_order_detail">{{ o.routineName }} · {{ o.plate }}</h1>
+      <app-status-chip kind="order" [status]="o.status" chipId="chp_order_detail_status" />
+    </header>
+
+    <div class="grid">
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <dl class="facts">
+            <div><dt>Vehículo</dt><dd><a [routerLink]="['/fleet', o.vehicleId]" id="lnk_order_vehicle">{{ o.plate }}</a></dd></div>
+            <div><dt>Cotización</dt><dd id="txt_order_quote">{{ o.quoteAmountCop | cop }}</dd></div>
+            <div>
+              <dt>Aprobación</dt>
+              <dd id="txt_order_approval">
+                {{ o.approvalType === 'Automatic' ? 'Automática' : o.approvalType === 'Manual' ? 'Jefe de flota' : '—' }}
+              </dd>
+            </div>
+            @if (o.cancellationReason) {
+              <div>
+                <dt>Motivo de cancelación</dt>
+                <dd id="txt_order_cancellation">{{ o.cancellationReason === 'QuoteRejected' ? 'Cotización rechazada' : 'Cancelada por el cliente' }}</dd>
+              </div>
+            }
+            @if (o.serviceKm !== null) {
+              <div><dt>Servicio real</dt><dd id="txt_order_service">{{ o.serviceKm | km }} · {{ o.serviceDate | date: 'mediumDate' : 'UTC' }}</dd></div>
+            }
+          </dl>
+
+          <h2 id="ttl_order_history">Historial</h2>
+          <ol class="history" id="lst_order_history">
+            @for (t of o.transitions; track $index) {
+              <li>
+                <time>{{ t.occurredAt | date: 'short' }}</time>
+                <span>{{ t.from ? statusLabel[t.from] + ' → ' : '' }}<strong>{{ statusLabel[t.to] }}</strong></span>
+                <span class="muted">por {{ actorLabel[t.actor] }}</span>
+              </li>
+            }
+          </ol>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <app-order-actions [order]="o" (changed)="onChanged($event)" />
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</section>

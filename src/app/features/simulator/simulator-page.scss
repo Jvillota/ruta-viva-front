@@ -1,0 +1,71 @@
+:host {
+  display: block;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.odometer {
+  font-size: 16px;
+}
+
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+
+  button {
+    margin-top: 8px;
+  }
+}
+
+.scenarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.hints {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.small {
+  font-size: 12px;
+}
+
+.callout {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--rv-info-bg);
+  color: var(--rv-info-fg);
+}
+
+.tag {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tag--ok {
+  background: var(--rv-ok-bg);
+  color: var(--rv-ok-fg);
+}
+
+.tag--neutral {
+  background: var(--rv-neutral-bg);
+  color: var(--rv-neutral-fg);
+}

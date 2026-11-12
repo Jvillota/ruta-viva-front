@@ -1,0 +1,116 @@
+<section class="page" id="ctn_simulator_module">
+  <header class="page-header">
+    <h1 id="ttl_simulator_module">Simulador</h1>
+    <p class="muted">Actúa como la plataforma de telemetría y como el paso del tiempo para demostrar las reglas.</p>
+  </header>
+
+  <div class="grid">
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title id="ttl_simulator_telemetry">Telemetría</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Vehículo</mat-label>
+          <mat-select [value]="vehicleId()" (valueChange)="selectVehicle($event)" id="sel_simulator_vehicle">
+            @for (v of vehicles(); track v.id) {
+              <mat-option [value]="v.id">{{ v.plate }} · {{ v.odometerKm | km }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (vehicle(); as v) {
+          <p class="odometer" id="txt_simulator_odometer">Odómetro actual: <strong>{{ v.odometerKm | km }}</strong></p>
+        }
+
+        <form class="inline-form" (ngSubmit)="sendManual()" id="frm_manual_reading">
+          <mat-form-field appearance="outline">
+            <mat-label>Lectura manual (km)</mat-label>
+            <input matInput type="number" min="0" [formControl]="manualKm" id="fld_manual_km" />
+          </mat-form-field>
+          <button mat-flat-button type="submit" [disabled]="busy()" id="btn_send_reading"><mat-icon>speed</mat-icon> Enviar lectura</button>
+        </form>
+
+        <h3>Escenarios</h3>
+        <div class="scenarios">
+          @for (s of scenarios; track s.id) {
+            <button mat-stroked-button (click)="runScenario(s)" [disabled]="busy() || !vehicle()" [id]="'btn_scenario_' + s.id" [title]="s.description">
+              {{ s.label }}
+            </button>
+          }
+        </div>
+        <ul class="hints">
+          @for (s of scenarios; track s.id) {
+            <li><strong>{{ s.label }}:</strong> {{ s.description }}</li>
+          }
+        </ul>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined">
+      <mat-card-header><mat-card-title id="ttl_simulator_clock">Reloj de negocio</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @if (clock.clock(); as c) {
+          <p class="odometer" id="txt_simulator_today">
+            Hoy: <strong>{{ c.today | date: 'fullDate' : 'UTC' }}</strong>
+            @if (c.offsetDays > 0) {
+              <span class="muted">(+{{ c.offsetDays }} días)</span>
+            }
+          </p>
+          <div class="scenarios">
+            <button mat-stroked-button (click)="advanceClock(1)" id="btn_advance_1">+1 día</button>
+            <button mat-stroked-button (click)="advanceClock(15)" id="btn_advance_15">+15 días</button>
+            <button mat-stroked-button (click)="advanceClock(31)" id="btn_advance_31">+31 días</button>
+          </div>
+          <form class="inline-form" (ngSubmit)="advanceClock(advanceDays.value)" id="frm_advance_clock">
+            <mat-form-field appearance="outline">
+              <mat-label>Adelantar días</mat-label>
+              <input matInput type="number" min="1" [formControl]="advanceDays" id="fld_advance_days" />
+            </mat-form-field>
+            <button mat-stroked-button type="submit" id="btn_advance_custom">Adelantar</button>
+          </form>
+          <button mat-flat-button (click)="runDailyCheck()" id="btn_run_daily_check"><mat-icon>event_repeat</mat-icon> Ejecutar revisión diaria</button>
+          <p class="muted small">El Worker también la ejecuta solo al detectar un cambio de fecha.</p>
+          @if (lastCheck(); as r) {
+            <p class="callout" id="txt_daily_check_result">
+              Revisión del {{ r.businessDate | date: 'mediumDate' : 'UTC' }}: {{ r.vehiclesChecked }} vehículos,
+              {{ r.routinesChanged }} rutinas cambiaron, {{ r.serviceOrdersOpened }} órdenes creadas.
+            </p>
+          }
+        } @else {
+          <p class="muted" id="txt_clock_disabled">El reloj de demo está desactivado en el servidor (Demo:Enabled = false).</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (sent().length > 0) {
+    <h2 id="ttl_simulator_results">Resultado de las lecturas enviadas</h2>
+    <mat-card appearance="outlined">
+      <table mat-table [dataSource]="sent()" id="tbl_simulator_results" class="full-width">
+        <ng-container matColumnDef="order">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let r">{{ r.order }}</td>
+        </ng-container>
+        <ng-container matColumnDef="km">
+          <th mat-header-cell *matHeaderCellDef class="num">Lectura</th>
+          <td mat-cell *matCellDef="let r" class="num">{{ r.km | km }}</td>
+        </ng-container>
+        <ng-container matColumnDef="outcome">
+          <th mat-header-cell *matHeaderCellDef>Resultado</th>
+          <td mat-cell *matCellDef="let r">
+            <span [class]="r.result.status === 'Applied' ? 'tag tag--ok' : 'tag tag--neutral'">{{ outcomeText(r.result.status) }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="odometer">
+          <th mat-header-cell *matHeaderCellDef class="num">Odómetro después</th>
+          <td mat-cell *matCellDef="let r" class="num">{{ r.result.currentOdometerKm | km }}</td>
+        </ng-container>
+        <ng-container matColumnDef="orders">
+          <th mat-header-cell *matHeaderCellDef class="num">Órdenes creadas</th>
+          <td mat-cell *matCellDef="let r" class="num">{{ r.result.serviceOrdersOpened }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </mat-card>
+  }
+</section>

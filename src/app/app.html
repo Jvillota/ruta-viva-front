@@ -1,0 +1,56 @@
+<mat-toolbar class="toolbar" id="ctn_app_toolbar">
+  <mat-icon class="logo" aria-hidden="true">local_shipping</mat-icon>
+  <span class="brand" id="ttl_app_brand">RutaViva</span>
+  <span class="subtitle">Mantenimiento preventivo</span>
+  <span class="spacer"></span>
+
+  @if (clock.clock(); as c) {
+    <span class="today" id="txt_business_date" title="Fecha de negocio">
+      <mat-icon aria-hidden="true">event</mat-icon>{{ c.today | date: 'mediumDate' : 'UTC' }}
+      @if (c.offsetDays > 0) {
+        <small>(+{{ c.offsetDays }} d)</small>
+      }
+    </span>
+  }
+
+  <mat-button-toggle-group
+    [value]="actor.actor()"
+    (change)="setActor($event.value)"
+    aria-label="Actor activo"
+    hideSingleSelectionIndicator
+    id="sel_app_actor"
+  >
+    <mat-button-toggle value="client" id="btn_actor_client">Jefe de flota</mat-button-toggle>
+    <mat-button-toggle value="workshop" id="btn_actor_workshop">Taller</mat-button-toggle>
+  </mat-button-toggle-group>
+</mat-toolbar>
+
+<mat-sidenav-container class="container">
+  <mat-sidenav mode="side" opened class="sidenav">
+    <mat-nav-list id="lst_app_navigation">
+      <a mat-list-item routerLink="/fleet" routerLinkActive="active" id="lnk_nav_fleet">
+        <mat-icon matListItemIcon>directions_car</mat-icon><span matListItemTitle>Flota</span>
+      </a>
+      <a mat-list-item routerLink="/orders" routerLinkActive="active" id="lnk_nav_orders">
+        <mat-icon matListItemIcon>build</mat-icon><span matListItemTitle>Órdenes</span>
+      </a>
+      <a mat-list-item routerLink="/notifications" routerLinkActive="active" id="lnk_nav_notifications">
+        <mat-icon
+          matListItemIcon
+          [matBadge]="notifications.unread()"
+          [matBadgeHidden]="notifications.unread() === 0"
+          matBadgeSize="small"
+          aria-hidden="false"
+          >notifications</mat-icon
+        ><span matListItemTitle>Avisos</span>
+      </a>
+      <a mat-list-item routerLink="/simulator" routerLinkActive="active" id="lnk_nav_simulator">
+        <mat-icon matListItemIcon>science</mat-icon><span matListItemTitle>Simulador</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>

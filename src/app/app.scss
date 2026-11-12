@@ -1,0 +1,70 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.toolbar {
+  gap: 12px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  flex-wrap: wrap;
+  height: auto;
+  min-height: 64px;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 14px;
+  opacity: 0.8;
+
+  @media (max-width: 700px) {
+    display: none;
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+.today {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+
+  small {
+    opacity: 0.8;
+  }
+}
+
+.container {
+  flex: 1;
+}
+
+.sidenav {
+  width: 200px;
+
+  @media (max-width: 700px) {
+    width: 64px;
+
+    [matListItemTitle] {
+      display: none;
+    }
+  }
+}
+
+.active {
+  background: var(--mat-sys-secondary-container);
+}
+
+.content {
+  padding: 24px;
+
+  @media (max-width: 700px) {
+    padding: 16px;
+  }
+}
